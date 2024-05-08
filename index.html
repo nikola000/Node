@@ -9,8 +9,8 @@
     <div id="chat-box">
         <ul id="messages"></ul>
         <form id="form" action="">
-            <input id="input" autocomplete="off">
-            <button>Send</button>
+            <input id="input" autocomplete="off" style="border-radius: 10px;">
+            <button style="border-radius: 10px;font-size: 20px;">Send</button>
         </form>
     </div>
 
@@ -38,6 +38,10 @@
             socket.on('chat message', (data) => {
                 const item = document.createElement('li');
                 item.textContent = `${data.user}: ${data.message}`;
+                item.style.fontFamily ='Cursive';
+                item.style.fontSize = '16px';
+                item.style.fontWeight = 'bold';
+                item.style.listStyleType = 'none';
                 messages.appendChild(item);
                 window.scrollTo(0, document.body.scrollHeight);
             });
