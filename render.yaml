@@ -1,0 +1,7 @@
+services:
+  - name: chat-app
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    httpsPort: 443
