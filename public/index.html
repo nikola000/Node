@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Game</title>
+    <style>
+        button{
+            border-radius: 10px;
+        }
+        input{
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rock Paper Scissors Game</h1>
+    <input type="text" id="accessKey" placeholder="Enter Access Key">
+    <button id="startButton">Start Game</button>
+    <div id="gameRoom" style="display: none;">
+        <!-- Game UI elements -->
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
