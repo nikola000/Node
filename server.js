@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 function generateAccessKey() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let key = '';
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 4; i++) {
         key += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return key;
@@ -37,15 +37,17 @@ io.on('connection', (socket) => {
             let room = gameRooms[accessKey];
             if (!room) {
                 // Create a new room if it doesn't exist
-                room.player2 = socket.id;
-                room.player2Name = playerName;
-                room.rematch = [];
-                gameRooms[accessKey] = room;
                 players[socket.id] = { name: playerName, key: accessKey, room: accessKey, score: 0 };
-                console.log(`start game ${room.player1}`);
-                io.to(room.player1).emit('start game', playerName);
-                console.log(`start game ${socket.id}`);
-                io.to(socket.id).emit('start game', room.player1Name);
+                players[accessKey] = { name: playerName, key: accessKey, room: accessKey, score: 0 };
+                gameRooms[accessKey] = { player1: socket.id, player1Name: playerName, rematch: [] };
+                socket.emit('access key', accessKey);
+                // players[socket.id] = { name: playerName, key: accessKey, room: accessKey, score: 0 };
+                // players[accessKey] = { name: playerName, key: accessKey, room: accessKey, score: 0 };
+                // gameRooms[accessKey] = { player1: socket.id, player1Name: playerName, rematch: [] };
+                // console.log(`start game ${room.player1}`);
+                // io.to(room.player1).emit('start game', playerName);
+                // console.log(`start game ${socket.id}`);
+                // io.to(socket.id).emit('start game', room.player1Name);
             } else if (!room.player2) {
                 room.player2 = socket.id;
                 room.player2Name = playerName;
@@ -61,6 +63,7 @@ io.on('connection', (socket) => {
 
         socket.on('choose', (choice) => {
             const player = players[socket.id];
+            const playerSocketId = socket.id;
             const room = gameRooms[player.room];
             // console.log(`${JSON.stringify(room)}`);
             // console.log(`${room.player1} > ${room.player2}`);
@@ -82,22 +85,24 @@ io.on('connection', (socket) => {
                     opponent.score++;
                 }
 
-                io.to(room.player1).emit('result', {
-                    choice,
+                io.to(playerSocketId).emit('result', {
+                    choice: player.choice,
+                    opponentChoice: opponent.choice,
                     result,
                     playerScore: player.score,
                     opponentScore: opponent.score
                 });
                 result = determineWinner(opponent.choice, choice);
-                io.to(room.player2).emit('result', {
+                io.to(opponentSocketId).emit('result', {
                     choice: opponent.choice,
+                    opponentChoice: player.choice,
                     result,
                     playerScore: opponent.score,
                     opponentScore: player.score
                 });
 
                 // Update player choices
-                player.choice = choice;
+                player.choice = null;
                 opponent.choice = null;
 
                 // Handle rematch request

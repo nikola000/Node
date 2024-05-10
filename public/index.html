@@ -15,8 +15,13 @@
 </head>
 <body>
     <h1>Rock Paper Scissors Game</h1>
-    <input type="text" id="accessKey" placeholder="Enter Access Key">
-    <button id="startButton">Start Game</button>
+    <div id="gameRoomControls">
+        <input type="text" id="accessKey" placeholder="Enter Access Key" oninput="this.value = this.value.toUpperCase()">
+        <button id="startButton">Start Game</button>
+        <!-- <img src="/images/Rock.jpg" alt=""> -->
+        <button id="leaveGameRoomButton" hidden>Leave Game Room</button>
+        <button id="rematchButton" hidden>Rematch</button>
+    </div>
     <div id="gameRoom" style="display: none;">
         <!-- Game UI elements -->
     </div>

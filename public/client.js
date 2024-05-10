@@ -5,7 +5,18 @@ let accessKey;
 function startGameRoom() {
     playerName = prompt('Enter your name:');
     accessKey = document.getElementById('accessKey').value.trim();
+    document.getElementById('startButton').hidden=true;
+    document.getElementById('leaveGameRoomButton').hidden=false;
+    document.getElementById('rematchButton').hidden=false;
+    document.getElementById('accessKey').disabled=true;
     socket.emit('new player', accessKey, playerName);
+}
+
+function restartForm(){
+    document.getElementById('startButton').hidden=false;
+    document.getElementById('leaveGameRoomButton').hidden=true;
+    document.getElementById('rematchButton').hidden=true;
+    document.getElementById('accessKey').disabled=false;
 }
 
 document.getElementById('startButton').addEventListener('click', startGameRoom);
@@ -22,27 +33,37 @@ socket.on('start game', (opponentName) => {
         <h2>Game Room</h2>
         <p>Opponent: ${opponentName}</p>
         <!-- Game UI elements -->
-        <button id="rock">Rock</button>
-        <button id="paper">Paper</button>
-        <button id="scissors">Scissors</button>
+        <div>
+        <button id="rock" style="background-image: url(/images/Rock.jpg);background-size: cover; height: 150px;width: 150px;"/>
+        <button id="paper" style="background-image: url(/images/Paper.jpg);background-size: cover; height: 150px;width: 150px;"/>
+        <button id="scissors" style="background-image: url(/images/Scissors.jpg);background-size: cover; height: 150px;width: 150px;"/>
+        </div>
+        <br>
         <div id="result"></div>
     `;
     document.querySelectorAll('#gameRoom button').forEach((button) => {
         button.addEventListener('click', () => {
             const choice = button.id;
+            document.querySelectorAll('#gameRoom button').forEach((button) => {
+                button.disabled=true;
+            });
             socket.emit('choose', choice);
         });
     });
 });
 
 socket.on('invalid key', (message) => {
+    restartForm();
     alert(message);
 });
 
 // Handle game result
-socket.on('result', ({ choice, result, playerScore, opponentScore }) => {
+socket.on('result', ({ choice, opponentChoice, result, playerScore, opponentScore }) => {
+    document.querySelectorAll('#gameRoom button').forEach((button) => {
+        button.disabled=false;
+    });
     console.log('Bravo');
-    document.getElementById('result').textContent = `You chose: ${choice}. Result: ${result}. Your Score: ${playerScore}. Opponent Score: ${opponentScore}`;
+    document.getElementById('result').textContent = `You chose: ${choice}, opponent chose: ${opponentChoice}. Result: ${result}. Your Score: ${playerScore}. Opponent Score: ${opponentScore}`;
 });
 
 // Handle rematch request confirmation
