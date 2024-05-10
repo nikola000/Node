@@ -17,6 +17,7 @@ function restartForm(){
     document.getElementById('leaveGameRoomButton').hidden=true;
     document.getElementById('rematchButton').hidden=true;
     document.getElementById('accessKey').disabled=false;
+    document.getElementById('gameRoom').innerHTML = ``;
 }
 
 document.getElementById('startButton').addEventListener('click', startGameRoom);
@@ -68,12 +69,23 @@ socket.on('result', ({ choice, opponentChoice, result, playerScore, opponentScor
 
 // Handle rematch request confirmation
 document.getElementById('rematchButton').addEventListener('click', () => {
+    // restartForm();
     socket.emit('rematch');
 });
 
-// Handle rematch start
-socket.on('rematch start', () => {
+// Handle leave game room
+document.getElementById('leaveGameRoomButton').addEventListener('click', () => {
+    restartForm();
+    console.log('leaving game room');
+    socket.emit('leaveGameRoom');
+});
+
+// Handle start rematch
+socket.on('start rematch', () => {
     // Reset UI for a new round
+    document.querySelectorAll('#gameRoom button').forEach((button) => {
+        button.disabled=false;
+    });
     document.getElementById('result').textContent = '';
 });
 
@@ -85,7 +97,8 @@ socket.on('game end', () => {
 
 // Handle opponent disconnection
 socket.on('opponent disconnected', () => {
-    document.getElementById('gameRoom').style.display = 'none';
+    // document.getElementById('gameRoom').style.display = 'none';
+    restartForm();
     alert('Your opponent has disconnected. Game over.');
 });
 
