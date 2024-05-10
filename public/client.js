@@ -69,7 +69,7 @@ socket.on('result', ({ choice, opponentChoice, result, playerScore, opponentScor
 
 // Handle rematch request confirmation
 document.getElementById('rematchButton').addEventListener('click', () => {
-    // restartForm();
+    // restartForm(); 
     socket.emit('rematch');
 });
 
